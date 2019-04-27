@@ -1,12 +1,11 @@
-var express = require('express')
-  , http = require('http')
+const app = require('express')()
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
 
-var app = express()
-var server = http.createServer(app)
-var io = require('socket.io').listen(server)
-
-io.on('connection', function(socket) {
-	console.log('connected', socket.id)
+io.on('connection', socket => {
+  console.log('a user connected')
 })
 
-module.exports = app
+server.listen(4000, () => {
+  console.log('The server is running: http://localhost:4000')
+})
