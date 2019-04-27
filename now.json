@@ -1,0 +1,1 @@
+{"version":2,"name":"seatsmart-remote-server","builds":[{"src":"**/*.js","use":"@now/node"}]}
