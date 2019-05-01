@@ -4,8 +4,6 @@ const io = require('socket.io')(server)
 
 const simpleId = require('simple-id')
 
-var rooms = []
-
 io.on('connection', socket => {
   console.log('a user connected')
 
@@ -14,22 +12,28 @@ io.on('connection', socket => {
   })
 
   // set up room to secure messages
-  socket.on('establishRoom', (passphrase) => {
+  socket.on('establishRoom', () => {
   	let newId = simpleId()
 
   	socket.join(newId)
 
-  	let roomInfo = {
-  		id: newId,
-  		passphrase: passphrase,
-  		host: socket.id,
-  		remote: ''
-  	}
-
-  	rooms.push(roomInfo)
-
+    // send room id back to host
   	io.to(newId).emit('roomEstablished', newId)
-  	io.to(socket.id).emit('remoteConnected', roomInfo)
+  })
+
+  // remote client joins room
+  socket.on('joinRoom', (room) => {
+    socket.join(room)
+
+    io.to(socket.id).emit('roomJoined')
+    io.to(room).emit('remoteConnected')
+  })
+
+  // reconnect
+  socket.on('rejoinRoom', (room) => {
+    socket.join(room)
+
+    io.to(socket.id).emit('rejoinedRoom')
   })
 
 })
