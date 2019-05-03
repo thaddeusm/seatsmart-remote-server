@@ -43,18 +43,14 @@ io.on('connection', socket => {
     io.to(room).emit('remoteConnected')
   })
 
-  // client checks passphrase
-  socket.on('requestCheckPassphrase', (data) => {
-    io.to(data.roomID).emit('checkPassphrase', data.passphrase)
+  // client requests data
+  socket.on('requestData', () => {
+    io.to(idDictionary[socket.id]).emit('dataRequested')
   })
 
-  // host responds to passphrase check
-  socket.on('confirmPassphrase', () => {
-    io.to(idDictionary[socket.id]).emit('passphraseConfirmed')
-  })
-
-  socket.on('rejectPassphrase', () => {
-    io.to(idDictionary[socket.id]).emit('passphraseRejected')
+  // host responds with encrypted data
+  socket.on('dataIncoming', (data) => {
+    io.to(idDictionary[socket.id]).emit('incomingData', data)
   })
 
   // reconnect
