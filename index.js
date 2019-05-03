@@ -60,7 +60,7 @@ io.on('connection', socket => {
     // reregister device in dictionary in case of id change
     idDictionary[socket.id] = room
 
-    io.to(socket.id).emit('rejoinedRoom')
+    io.to(idDictionary[socket.id]).emit('rejoinedRoom')
   })
 
   socket.on('disconnect', () => {
