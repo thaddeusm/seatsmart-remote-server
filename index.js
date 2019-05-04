@@ -63,6 +63,11 @@ io.on('connection', socket => {
     io.to(idDictionary[socket.id]).emit('rejoinedRoom')
   })
 
+  // host ends session
+  socket.on('endSession', () => {
+    io.to(idDictionary[socket.id]).emit('sessionEnded')
+  })
+
   socket.on('disconnect', () => {
     io.to(idDictionary[socket.id]).emit('deviceDisconnection')
   })
