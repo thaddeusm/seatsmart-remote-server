@@ -74,6 +74,8 @@ io.on('connection', socket => {
 
 })
 
-server.listen(4000, () => {
-  console.log('The server is running')
-})
+// server.listen(4000, () => {
+//   console.log('The server is running')
+// })
+
+module.exports = app
