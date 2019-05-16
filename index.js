@@ -76,6 +76,7 @@ io.on('connection', socket => {
   // host ends session
   socket.on('endSession', () => {
     io.to(idDictionary[socket.id]).emit('sessionEnded')
+    socket.leave(idDictionary[socket.id])
   })
 
   socket.on('disconnect', () => {
