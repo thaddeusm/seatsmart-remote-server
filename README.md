@@ -5,8 +5,8 @@ This realtime server powers remote functionality within the desktop application
 [Seatsmart](https://github.com/thaddeusm/seatsmart-FHSU).  
 
 ## Scope
-When Internet access is available, instructors can use the [Remote]
-(https://github.com/thaddeusm/seatsmart-remote) feature to 
+When Internet access is available, instructors can use the 
+[Remote](https://github.com/thaddeusm/seatsmart-remote) feature to 
 access basic features from a mobile device.  Data is encrypted during transport 
 and this information is not stored in any cloud database.
 
