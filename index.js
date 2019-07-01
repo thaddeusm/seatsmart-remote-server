@@ -12,7 +12,7 @@ io.on('connection', socket => {
 
   // set up room to secure messages
   socket.on('establishRoom', () => {
-  	let newId = simpleId()
+  	let newId = simpleId(4, '1234567890')
 
     // send host to newly created room
   	socket.join(newId)
