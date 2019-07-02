@@ -7,6 +7,22 @@ const simpleId = require('simple-id')
 // this object holds information about connected devices and rooms
 var idDictionary = {}
 
+// store closed rooms to force exit remote connections
+var closedRooms = []
+
+var roomClosed = function(roomToCheck) {
+  let check = false
+
+  for (let i=0; i<closedRooms.length; i++) {
+    if (closedRooms[i] == roomToCheck) {
+      let check = true
+      break
+    }
+  }
+
+  return check
+}
+
 io.on('connection', socket => {
   console.log('a user connected')
 
@@ -43,7 +59,13 @@ io.on('connection', socket => {
 
   // client requests data
   socket.on('requestData', () => {
-    io.to(idDictionary[socket.id]).emit('dataRequested')
+    let roomID = idDictionary[socket.id]
+
+    if (!roomClosed(roomID)) {
+      io.to(roomID).emit('dataRequested')
+    } else {
+      io.to(roomID).emit('sessionEnded')
+    }
   })
 
   // host responds with encrypted data
@@ -74,8 +96,11 @@ io.on('connection', socket => {
 
   // host ends session
   socket.on('endSession', () => {
+    let roomID = idDictionary[socket.id]
+
     // notify remote
-    io.to(idDictionary[socket.id]).emit('sessionEnded')
+    io.to(roomID).emit('sessionEnded')
+    closedRooms.push(roomID)
 
     // remove device from room
     socket.leave(idDictionary[socket.id])
