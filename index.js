@@ -66,7 +66,7 @@ io.on('connection', socket => {
       socket.join(room)
     } else {
       // notify remote client
-      io.to(roomID).emit('sessionEnded')
+      io.to(socket.id).emit('sessionEnded')
     }
 
     // register client in dictionary
