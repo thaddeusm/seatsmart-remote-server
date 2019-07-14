@@ -65,8 +65,8 @@ io.on('connection', socket => {
     if (roomExists(room) && !roomClosed(room)) {
       socket.join(room)
     } else {
-      // notify remote client
-      io.to(socket.id).emit('sessionEnded')
+      // notify remote client that room does not exist
+      io.to(socket.id).emit('roomJoinRejected')
     }
 
     // register client in dictionary
