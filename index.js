@@ -10,12 +10,27 @@ var idDictionary = {}
 // store closed rooms to force exit remote connections
 var closedRooms = []
 
-var roomClosed = function(roomToCheck) {
+const roomClosed = function(roomToCheck) {
   let check = false
 
   for (let i=0; i<closedRooms.length; i++) {
     if (closedRooms[i] == roomToCheck) {
-      let check = true
+      check = true
+      break
+    }
+  }
+
+  return check
+}
+
+const roomExists = function(roomToCheck) {
+  let check = false
+
+  let registeredRooms = Object.values(idDictionary)
+
+  for (let i=0; i<registeredRooms.length; i++) {
+    if (registeredRooms[i] == roomToCheck) {
+      check = true
       break
     }
   }
@@ -47,7 +62,12 @@ io.on('connection', socket => {
 
   // remote client joins room
   socket.on('joinRoom', (room) => {
-    socket.join(room)
+    if (roomExists(room) && !roomClosed(room)) {
+      socket.join(room)
+    } else {
+      // notify remote client
+      io.to(roomID).emit('sessionEnded')
+    }
 
     // register client in dictionary
     idDictionary[socket.id] = room
