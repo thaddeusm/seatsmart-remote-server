@@ -2,9 +2,11 @@ const app = require('express')()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 
-const simpleId = require('simple-id')
+const simpleID = require('simple-iD')
 
-// this object holds information about connected devices and rooms
+var activitiesIDDictionary = {}
+
+// this object holds information about connected devices and rooms (remote)
 var idDictionary = {}
 
 // store closed rooms to force exit remote connections
@@ -41,12 +43,47 @@ const roomExists = function(roomToCheck) {
 io.on('connection', socket => {
   console.log('a user connected')
 
-  // set up room to secure messages
-  socket.on('establishRoom', () => {
-  	let newId = simpleId(4, '1234567890')
+  // Seatsmart Activities Events
+
+  // set up an activity preview room
+  socket.on('createPreviewRoom', () => {
+    let newID = simpleID(6, '1234567890abc')
 
     // send host to newly created room
-  	socket.join(newId)
+    socket.join(newID)
+
+    // register host in dictionary
+    activitiesIDDictionary[socket.id] = newID
+
+    // send room id back to host
+    io.to(newID).emit('previewRoomEstablished', newID)
+  })
+
+  // preview device connects
+  socket.on('joinPreviewRoom', (room) => {
+    socket.join(room)
+
+    // register preview device in dictionary
+    activitiesIDDictionary[socket.id] = room
+
+    // send notification to preview device and host
+    io.to(socket.id).emit('roomJoined', room)
+    io.to(room).emit('previewDeviceConnected')
+  })
+
+  // host sends activity data for preview
+  socket.on('activityPreviewDataIncoming', (data) => {
+    io.to(activitiesIDDictionary[socket.id]).emit('incomingActivityPreviewData', data)
+  })
+
+  // Seatsmart Remote Events:
+
+  // set up room to secure messages
+  socket.on('establishRoom', () => {
+  	let newID = simpleID(4, '1234567890')
+
+    // send host to newly created room
+  	socket.join(newID)
 
     // if the host is starting a new connection, close former
     if (idDictionary.hasOwnProperty(socket.id)) {
@@ -54,10 +91,10 @@ io.on('connection', socket => {
     }
 
     // register host in dictionary
-    idDictionary[socket.id] = newId
+    idDictionary[socket.id] = newID
 
     // send room id back to host
-  	io.to(newId).emit('roomEstablished', newId)
+  	io.to(newID).emit('roomEstablished', newID)
   })
 
   // remote client joins room
