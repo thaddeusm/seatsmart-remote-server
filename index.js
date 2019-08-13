@@ -2,7 +2,7 @@ const app = require('express')()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 
-const simpleID = require('simple-iD')
+const simpleID = require('simple-id')
 
 // this object holds information about connected devices and rooms (activity)
 var activitiesIDDictionary = {}
@@ -48,7 +48,7 @@ io.on('connection', socket => {
 
   // set up an activity preview room
   socket.on('createPreviewRoom', () => {
-    let newID = simpleID(6, '1234567890')
+    let newID = simpleID(4, '1234567890')
 
     // send host to newly created room
     socket.join(newID)
