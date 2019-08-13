@@ -4,6 +4,7 @@ const io = require('socket.io')(server)
 
 const simpleID = require('simple-iD')
 
+// this object holds information about connected devices and rooms (activity)
 var activitiesIDDictionary = {}
 
 // this object holds information about connected devices and rooms (remote)
@@ -47,7 +48,7 @@ io.on('connection', socket => {
 
   // set up an activity preview room
   socket.on('createPreviewRoom', () => {
-    let newID = simpleID(6, '1234567890abc')
+    let newID = simpleID(6, '1234567890')
 
     // send host to newly created room
     socket.join(newID)
@@ -80,10 +81,10 @@ io.on('connection', socket => {
 
   // set up room to secure messages
   socket.on('establishRoom', () => {
-  	let newID = simpleID(4, '1234567890')
+    let newID = simpleID(4, '1234567890')
 
     // send host to newly created room
-  	socket.join(newID)
+    socket.join(newID)
 
     // if the host is starting a new connection, close former
     if (idDictionary.hasOwnProperty(socket.id)) {
@@ -94,7 +95,7 @@ io.on('connection', socket => {
     idDictionary[socket.id] = newID
 
     // send room id back to host
-  	io.to(newID).emit('roomEstablished', newID)
+    io.to(newID).emit('roomEstablished', newID)
   })
 
   // remote client joins room
