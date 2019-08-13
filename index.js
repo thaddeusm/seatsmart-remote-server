@@ -48,7 +48,11 @@ io.on('connection', socket => {
 
   // set up an activity preview room
   socket.on('createPreviewRoom', () => {
+<<<<<<< HEAD
     let newID = simpleID(6, '1234567890')
+=======
+    let newID = simpleID(6, '1234567890abc')
+>>>>>>> d540f1157576f73b956ee06084bd540357681c17
 
     // send host to newly created room
     socket.join(newID)
