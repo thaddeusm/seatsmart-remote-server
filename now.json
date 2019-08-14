@@ -1,4 +1,7 @@
 {
 	"version": 1,
-	"alias": ["seatsmart-remote-server.now.sh", "remote-server.seatsmart.tech"]
+	"alias": ["remote-server.seatsmart.tech", "seatsmart-remote-server.now.sh"],
+	"env": {
+	  "NODE_ENV": "production"
+	}
 }
