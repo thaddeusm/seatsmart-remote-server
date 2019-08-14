@@ -72,6 +72,13 @@ io.on('connection', socket => {
     io.to(room).emit('previewDeviceConnected')
   })
 
+  // preview device requests data
+  socket.on('requestPreviewData', () => {
+    let roomID = idDictionary[socket.id]
+
+    io.to(roomID).emit('previewDataRequested')
+  })
+
   // host sends activity data for preview
   socket.on('activityPreviewDataIncoming', (data) => {
     io.to(activitiesIDDictionary[socket.id]).emit('incomingActivityPreviewData', data)
