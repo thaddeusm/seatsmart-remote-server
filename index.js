@@ -73,15 +73,15 @@ io.on('connection', socket => {
   })
 
   // preview device requests data
-  socket.on('requestPreviewData', () => {
+  socket.on('requestActivityData', () => {
     let roomID = activitiesIDDictionary[socket.id]
 
-    io.to(roomID).emit('previewDataRequested')
+    io.to(roomID).emit('activityDataRequested')
   })
 
   // host sends activity data for preview
-  socket.on('activityPreviewDataIncoming', (data) => {
-    io.to(activitiesIDDictionary[socket.id]).emit('incomingActivityPreviewData', data)
+  socket.on('activityDataIncoming', (data) => {
+    io.to(activitiesIDDictionary[socket.id]).emit('incomingActivityData', data)
   })
 
   // Seatsmart Remote Events:
