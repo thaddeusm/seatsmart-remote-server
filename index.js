@@ -46,8 +46,8 @@ io.on('connection', socket => {
 
   // Seatsmart Activities Events
 
-  // set up an activity preview room
-  socket.on('createPreviewRoom', () => {
+  // set up an activity room
+  socket.on('createActivityRoom', () => {
     let newID = simpleID(4, '1234567890')
 
     // send host to newly created room
@@ -57,29 +57,29 @@ io.on('connection', socket => {
     activitiesIDDictionary[socket.id] = newID
 
     // send room id back to host
-    io.to(newID).emit('previewRoomEstablished', newID)
+    io.to(newID).emit('activityRoomEstablished', newID)
   })
 
-  // preview device connects
-  socket.on('joinPreviewRoom', (room) => {
+  // activity device connects
+  socket.on('joinActivityRoom', (room) => {
     socket.join(room)
 
-    // register preview device in dictionary
+    // register activity device in dictionary
     activitiesIDDictionary[socket.id] = room
 
-    // send notification to preview device and host
+    // send notification to activity device and host
     io.to(socket.id).emit('roomJoined', room)
-    io.to(room).emit('previewDeviceConnected')
+    io.to(room).emit('activityDeviceConnected')
   })
 
-  // preview device requests data
+  // activity device requests data
   socket.on('requestActivityData', () => {
     let roomID = activitiesIDDictionary[socket.id]
 
     io.to(roomID).emit('activityDataRequested')
   })
 
-  // host sends activity data for preview
+  // host sends activity data to connected client
   socket.on('activityDataIncoming', (data) => {
     io.to(activitiesIDDictionary[socket.id]).emit('incomingActivityData', data)
   })
@@ -174,6 +174,7 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     // send notification to room
     io.to(idDictionary[socket.id]).emit('deviceDisconnection')
+    io.to(activitiesIDDictionary[socket.id]).emit('deviceDisconnection')
   })
 
 })
