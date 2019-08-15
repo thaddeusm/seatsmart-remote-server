@@ -84,6 +84,16 @@ io.on('connection', socket => {
     io.to(activitiesIDDictionary[socket.id]).emit('incomingActivityData', data)
   })
 
+  // host sends start signal
+  socket.on('sendStartSignal', () => {
+    io.to(activitiesIDDictionary[socket.id]).emit('allowActivityStart')
+  })
+
+  // activity device sends activity response
+  socket.on('sendResponseData', (data) => {
+    io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
+  })
+
   // Seatsmart Remote Events:
 
   // set up room to secure messages
