@@ -94,6 +94,11 @@ io.on('connection', socket => {
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
   })
 
+  socket.on('rejoinActivityRoom', (room) => {
+    socket.join(room)
+    io.to(socket.id).emit('rejoinedActivityRoom')
+  })
+
   // Seatsmart Remote Events:
 
   // set up room to secure messages
