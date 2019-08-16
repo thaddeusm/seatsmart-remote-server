@@ -67,17 +67,17 @@ io.on('connection', socket => {
   socket.on('joinActivityRoom', (room) => {
     if (roomExists(room, activitiesIDDictionary) && !roomClosed(room, closedActivityRooms)) {
       socket.join(room)
+
+      // register activity device in dictionary
+      activitiesIDDictionary[socket.id] = room
+
+      // send notification to activity device and host
+      io.to(socket.id).emit('roomJoined', room)
+      io.to(room).emit('activityDeviceConnected', socket.id)
     } else {
       // notify activity device that room does not exist
       io.to(socket.id).emit('roomJoinRejected')
     }
-
-    // register activity device in dictionary
-    activitiesIDDictionary[socket.id] = room
-
-    // send notification to activity device and host
-    io.to(socket.id).emit('roomJoined', room)
-    io.to(room).emit('activityDeviceConnected', socket.id)
   })
 
   // activity device requests data
@@ -153,17 +153,17 @@ io.on('connection', socket => {
   socket.on('joinRoom', (room) => {
     if (roomExists(room, idDictionary) && !roomClosed(room, idDictionary)) {
       socket.join(room)
+
+      // register client in dictionary
+      idDictionary[socket.id] = room
+
+      // send notification to remote device and host
+      io.to(socket.id).emit('roomJoined', room)
+      io.to(room).emit('remoteConnected')
     } else {
       // notify remote client that room does not exist
       io.to(socket.id).emit('roomJoinRejected')
     }
-
-    // register client in dictionary
-    idDictionary[socket.id] = room
-
-    // send notification to remote device and host
-    io.to(socket.id).emit('roomJoined', room)
-    io.to(room).emit('remoteConnected')
   })
 
   // client requests data
