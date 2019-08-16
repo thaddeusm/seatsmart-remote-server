@@ -99,6 +99,10 @@ io.on('connection', socket => {
     io.to(socket.id).emit('rejoinedActivityRoom')
   })
 
+  socket.on('cancelActivity', () => {
+    io.to(activitiesIDDictionary[socket.id]).emit('activityCanceled')
+  })
+
   // Seatsmart Remote Events:
 
   // set up room to secure messages
