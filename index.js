@@ -218,7 +218,7 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     // send notification to room
     io.to(idDictionary[socket.id]).emit('deviceDisconnection')
-    io.to(activitiesIDDictionary[socket.id]).emit('deviceDisconnection')
+    io.to(activitiesIDDictionary[socket.id]).emit('deviceDisconnection', socket.id)
   })
 
 })
