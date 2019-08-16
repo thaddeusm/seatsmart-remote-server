@@ -7,13 +7,16 @@ const simpleID = require('simple-id')
 // this object holds information about connected devices and rooms (activity)
 var activitiesIDDictionary = {}
 
+// store closed activity rooms to force exit activity device connections
+var closedActivityRooms = []
+
 // this object holds information about connected devices and rooms (remote)
 var idDictionary = {}
 
 // store closed rooms to force exit remote connections
 var closedRooms = []
 
-const roomClosed = function(roomToCheck) {
+const roomClosed = function(roomToCheck, dictionary) {
   let check = false
 
   for (let i=0; i<closedRooms.length; i++) {
@@ -26,7 +29,7 @@ const roomClosed = function(roomToCheck) {
   return check
 }
 
-const roomExists = function(roomToCheck) {
+const roomExists = function(roomToCheck, dictionary) {
   let check = false
 
   let registeredRooms = Object.values(idDictionary)
@@ -62,7 +65,12 @@ io.on('connection', socket => {
 
   // activity device connects
   socket.on('joinActivityRoom', (room) => {
-    socket.join(room)
+    if (roomExists(room, activitiesIDDictionary) && !roomClosed(room, activitiesIDDictionary)) {
+      socket.join(room)
+    } else {
+      // notify activity device that room does not exist
+      io.to(socket.id).emit('roomJoinRejected')
+    }
 
     // register activity device in dictionary
     activitiesIDDictionary[socket.id] = room
@@ -100,7 +108,24 @@ io.on('connection', socket => {
   })
 
   socket.on('cancelActivity', () => {
+    let roomID = activitiesIDDictionary[socket.id]
+
+    closedActivityRooms.push(roomID)
+
+    // remove device from room
+    socket.leave(activitiesIDDictionary[socket.id])
+    // notify activity device
     io.to(activitiesIDDictionary[socket.id]).emit('activityCanceled')
+  })
+
+  // host ends session
+  socket.on('endActivitySession', () => {
+    let roomID = activitiesIDDictionary[socket.id]
+
+    closedActivityRooms.push(roomID)
+
+    // remove device from room
+    socket.leave(activitiesIDDictionary[socket.id])
   })
 
   // Seatsmart Remote Events:
@@ -126,7 +151,7 @@ io.on('connection', socket => {
 
   // remote client joins room
   socket.on('joinRoom', (room) => {
-    if (roomExists(room) && !roomClosed(room)) {
+    if (roomExists(room, idDictionary) && !roomClosed(room, idDictionary)) {
       socket.join(room)
     } else {
       // notify remote client that room does not exist
