@@ -19,8 +19,8 @@ var closedRooms = []
 const roomClosed = function(roomToCheck, dictionary) {
   let check = false
 
-  for (let i=0; i<closedRooms.length; i++) {
-    if (closedRooms[i] == roomToCheck) {
+  for (let i=0; i<dictionary.length; i++) {
+    if (dictionary[i] == roomToCheck) {
       check = true
       break
     }
@@ -32,7 +32,7 @@ const roomClosed = function(roomToCheck, dictionary) {
 const roomExists = function(roomToCheck, dictionary) {
   let check = false
 
-  let registeredRooms = Object.values(idDictionary)
+  let registeredRooms = Object.values(dictionary)
 
   for (let i=0; i<registeredRooms.length; i++) {
     if (registeredRooms[i] == roomToCheck) {
@@ -65,7 +65,7 @@ io.on('connection', socket => {
 
   // activity device connects
   socket.on('joinActivityRoom', (room) => {
-    if (roomExists(room, activitiesIDDictionary) && !roomClosed(room, activitiesIDDictionary)) {
+    if (roomExists(room, activitiesIDDictionary) && !roomClosed(room, closedActivityRooms)) {
       socket.join(room)
     } else {
       // notify activity device that room does not exist
