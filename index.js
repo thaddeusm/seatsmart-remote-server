@@ -69,7 +69,7 @@ io.on('connection', socket => {
 
     // send notification to activity device and host
     io.to(socket.id).emit('roomJoined', room)
-    io.to(room).emit('activityDeviceConnected')
+    io.to(room).emit('activityDeviceConnected', socket.id)
   })
 
   // activity device requests data
