@@ -16,8 +16,16 @@ var idDictionary = {}
 // store closed rooms to force exit remote connections
 var closedRooms = []
 
-const roomClosed = function(roomToCheck, dictionary) {
+const roomClosed = function(roomToCheck, connectionType) {
   let check = false
+
+  let dictionary
+
+  if (connectionType == 'remote') {
+    dictionary = closedRooms
+  } else {
+    dictionary = closedActivityRooms
+  }
 
   for (let i=0; i<dictionary.length; i++) {
     if (dictionary[i] == roomToCheck) {
@@ -29,8 +37,16 @@ const roomClosed = function(roomToCheck, dictionary) {
   return check
 }
 
-const roomExists = function(roomToCheck, dictionary) {
+const roomExists = function(roomToCheck, connectionType) {
   let check = false
+
+  let dictionary
+
+  if (connectionType == 'remote') {
+    dictionary = idDictionary
+  } else {
+    dictionary = activitiesIDDictionary
+  }
 
   let registeredRooms = Object.values(dictionary)
 
@@ -65,7 +81,7 @@ io.on('connection', socket => {
 
   // activity device connects
   socket.on('joinActivityRoom', (room) => {
-    if (roomExists(room, activitiesIDDictionary) && !roomClosed(room, closedActivityRooms)) {
+    if (roomExists(room, 'activity') && !roomClosed(room, 'activity')) {
       socket.join(room)
 
       // register activity device in dictionary
@@ -151,7 +167,7 @@ io.on('connection', socket => {
 
   // remote client joins room
   socket.on('joinRoom', (room) => {
-    if (roomExists(room, idDictionary) && !roomClosed(room, idDictionary)) {
+    if (roomExists(room, 'remote') && !roomClosed(room, 'remote')) {
       socket.join(room)
 
       // register client in dictionary
