@@ -135,6 +135,16 @@ io.on('connection', socket => {
     io.to(socket.id).emit('rejoinedActivityRoom')
   })
 
+  // upon reconnect, activity device checks if activity has started
+  socket.on('checkActivityStatus', (room) => {
+    io.to(room).emit('activityStatusRequested', socket.id)
+  })
+
+  // if the activity is finished, notify activity device attempting to join
+  socket.on('rejectDeviceParticipation', (device) => {
+    io.to(device).emit('participationRejected')
+  })
+
   socket.on('cancelActivity', () => {
     let roomID = activitiesIDDictionary[socket.id]
 
