@@ -4,11 +4,14 @@ const io = require('socket.io')(server)
 
 const simpleID = require('simple-id')
 
-// this object holds information about connected devices and rooms (activity)
+// hold information about connected devices and rooms (activity)
 var activitiesIDDictionary = {}
 
 // store closed activity rooms to force exit activity device connections
 var closedActivityRooms = []
+
+// store activity responses by room
+var activityResponses = {}
 
 // this object holds information about connected devices and rooms (remote)
 var idDictionary = {}
@@ -115,6 +118,8 @@ io.on('connection', socket => {
 
   // activity device sends activity response
   socket.on('sendResponseData', (data) => {
+    activityResponses[activitiesIDDictionary[socket.id]].push(data)
+
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
   })
 
@@ -132,6 +137,13 @@ io.on('connection', socket => {
     socket.leave(activitiesIDDictionary[socket.id])
     // notify activity device
     io.to(activitiesIDDictionary[socket.id]).emit('activityCanceled')
+  })
+
+  // host requests response data from server to check for missing records
+  socket.on('requestActivityResponses', () => {
+    let responses = activityResponses[activitiesIDDictionary[socket.id]]
+
+    io.to(socket.id).emit('incomingActivityResponses', responses)
   })
 
   // host ends session
