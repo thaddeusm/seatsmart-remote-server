@@ -78,6 +78,9 @@ io.on('connection', socket => {
     // register host in dictionary
     activitiesIDDictionary[socket.id] = newID
 
+    // register room in response store
+    activityResponses[newID] = []
+
     // send room id back to host
     io.to(newID).emit('activityRoomEstablished', newID)
   })
@@ -118,7 +121,11 @@ io.on('connection', socket => {
 
   // activity device sends activity response
   socket.on('sendResponseData', (data) => {
-    activityResponses[activitiesIDDictionary[socket.id]].push(data)
+    let roomID = activitiesIDDictionary[socket.id]
+
+    if (activityResponses.hasOwnProperty(roomID)) {
+      activityResponses[roomID].push(data)
+    }
 
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
   })
