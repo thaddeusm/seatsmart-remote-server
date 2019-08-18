@@ -96,6 +96,11 @@ io.on('connection', socket => {
     }
   })
 
+  // activity device user sends their shortened name for identification
+  socket.on('sendingUsername', (name) => {
+    io.to(activitiesIDDictionary[socket.id]).emit('incomingUsername', name)
+  })
+
   // activity device requests data
   socket.on('requestActivityData', () => {
     let roomID = activitiesIDDictionary[socket.id]
@@ -115,8 +120,6 @@ io.on('connection', socket => {
 
   // activity device sends activity response
   socket.on('sendResponseData', (data) => {
-    let roomID = activitiesIDDictionary[socket.id]
-
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
   })
 
