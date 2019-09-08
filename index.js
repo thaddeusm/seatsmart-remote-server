@@ -123,6 +123,11 @@ io.on('connection', socket => {
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
   })
 
+  // host confirms response was received
+  socket.on('confirmResponseReceipt', (data) => {
+    io.to(activitiesIDDictionary[socket.id]).emit('responseReceiptConfirmed', data)
+  })
+
   socket.on('rejoinActivityRoom', (room) => {
     socket.join(room)
     io.to(socket.id).emit('rejoinedActivityRoom')
