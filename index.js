@@ -223,6 +223,11 @@ io.on('connection', socket => {
     io.to(idDictionary[socket.id]).emit('confirmAction', actionID)
   })
 
+  // notify remote that activity has ended / been canceled
+  socket.on('remoteActivityEnded', () => {
+    io.to(idDictionary[socket.id]).emit('endRemoteActivity')
+  })
+
   // reconnect
   socket.on('rejoinRoom', (room) => {
     socket.join(room)
