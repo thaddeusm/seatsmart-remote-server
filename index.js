@@ -130,7 +130,11 @@ io.on('connection', socket => {
 
   socket.on('rejoinActivityRoom', (room) => {
     socket.join(room)
+
+    activitiesIDDictionary[socket.id] = room
+
     io.to(socket.id).emit('rejoinedActivityRoom')
+    io.to(activitiesIDDictionary[socket.id]).emit('rejoinedRoom')
   })
 
   // upon reconnect, activity device checks if activity has started
@@ -234,11 +238,10 @@ io.on('connection', socket => {
 
     // reregister device in dictionary in case of id change
     idDictionary[socket.id] = room
-    activitiesIDDictionary[socket.id] = room
+    
 
     // send notification to room
     io.to(idDictionary[socket.id]).emit('rejoinedRoom')
-    io.to(activitiesIDDictionary[socket.id]).emit('rejoinedRoom')
   })
 
   // host ends session
