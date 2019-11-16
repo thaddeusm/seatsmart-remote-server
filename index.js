@@ -165,11 +165,16 @@ io.on('connection', socket => {
     io.to(activitiesIDDictionary[socket.id]).emit('activityCanceled')
   })
 
-  // host ends session
+  // host prepares to leave session, requests final responses from server
   socket.on('endActivitySession', () => {
     let roomID = activitiesIDDictionary[socket.id]
 
     io.to(socket.id).emit('incomingResponses', activityResponseDictionary[roomID])
+  })
+
+  // host ends activity after receiving final responses
+  socket.on('confirmResponsesReceipt', () => {
+    let roomID = activitiesIDDictionary[socket.id]
 
     closedActivityRooms.push(roomID)
 
