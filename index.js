@@ -127,12 +127,8 @@ io.on('connection', socket => {
   // activity device sends activity response
   socket.on('sendResponseData', (data) => {
     activityResponseDictionary[activitiesIDDictionary[socket.id]].push(data)
+    io.to(socket.id).emit('responseReceiptConfirmed')
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
-  })
-
-  // host confirms response was received
-  socket.on('confirmResponseReceipt', (data) => {
-    io.to(activitiesIDDictionary[socket.id]).emit('responseReceiptConfirmed', data)
   })
 
   socket.on('rejoinActivityRoom', (room) => {
