@@ -7,6 +7,9 @@ const simpleID = require('simple-id')
 // hold information about connected devices and rooms (activity)
 var activitiesIDDictionary = {}
 
+// store encrypted responses from activity devices
+var activityResponseDictionary = {}
+
 // store closed activity rooms to force exit activity device connections
 var closedActivityRooms = []
 
@@ -75,6 +78,9 @@ io.on('connection', socket => {
     // register host in dictionary
     activitiesIDDictionary[socket.id] = newID
 
+    // establish property as array in response dictionary
+    activityResponseDictionary[newID] = []
+
     // send room id back to host
     io.to(newID).emit('activityRoomEstablished', newID)
   })
@@ -120,6 +126,7 @@ io.on('connection', socket => {
 
   // activity device sends activity response
   socket.on('sendResponseData', (data) => {
+    activityResponseDictionary[activitiesIDDictionary[socket.id]].push(data)
     io.to(activitiesIDDictionary[socket.id]).emit('incomingResponseData', data)
   })
 
@@ -161,6 +168,8 @@ io.on('connection', socket => {
   // host ends session
   socket.on('endActivitySession', () => {
     let roomID = activitiesIDDictionary[socket.id]
+
+    io.to(socket.id).emit('incomingResponses', activityResponseDictionary[roomID])
 
     closedActivityRooms.push(roomID)
 
