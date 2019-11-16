@@ -161,7 +161,7 @@ io.on('connection', socket => {
 
     // remove device from room
     socket.leave(activitiesIDDictionary[socket.id])
-    // notify activity device
+    // notify activity devices
     io.to(activitiesIDDictionary[socket.id]).emit('activityCanceled')
   })
 
@@ -180,6 +180,8 @@ io.on('connection', socket => {
 
     // remove device from room
     socket.leave(activitiesIDDictionary[socket.id])
+    // notify activity devices
+    io.to(activitiesIDDictionary[socket.id]).emit('activityCanceled')
   })
 
   // Seatsmart Remote Events:
